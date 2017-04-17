@@ -1,7 +1,9 @@
 package com.vivid.BookStore.category.dao;
 
-import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 import com.vivid.BookStore.category.domain.Category;
 
@@ -11,44 +13,9 @@ import com.vivid.BookStore.category.domain.Category;
  * @author qdmmy6
  *
  */
+@Mapper
+@Repository
 public interface CategoryDao {
-
-	/*
-	 * 把一个Map中的数据映射到Category中
-	 */
-	// Category toCategory(Map<String, Object> map);
-	// {
-	// /*
-	// * map {cid:xx, cname:xx, pid:xx, desc:xx, orderBy:xx}
-	// * Category{cid:xx, cname:xx, parent:(cid=pid), desc:xx}
-	// */
-	// Category category = CommonUtils.toBean(map, Category.class);
-	// String pid = (String)map.get("pid");// 如果是一级分类，那么pid是null
-	// if(pid != null) {//如果父分类ID不为空，
-	// /*
-	// * 使用一个父分类对象来拦截pid
-	// * 再把父分类设置给category
-	// */
-	// Category parent = new Category();
-	// parent.setCid(pid);
-	// category.setParent(parent);
-	// }
-	// return category;
-	// }
-
-	/*
-	 * 可以把多个Map(List<Map>)映射成多个Category(List<Category>)
-	 */
-	// private List<Category> toCategoryList(List<Map<String,Object>> mapList) {
-	// List<Category> categoryList = new ArrayList<Category>();//创建一个空集合
-	// for(Map<String,Object> map : mapList) {//循环遍历每个Map
-	// Category c = toCategory(map);//把一个Map转换成一个Category
-	// categoryList.add(c);//添加到集合中
-	// }
-	// return categoryList;//返回集合
-	// }
-
-
 
 	/**
 	 * 通过父分类查询子分类
@@ -115,7 +82,6 @@ public interface CategoryDao {
 	 */
 	public Category load(String cid);
 
-
 	/**
 	 * 修改分类 即可修改一级分类，也可修改二级分类
 	 * 
@@ -143,7 +109,6 @@ public interface CategoryDao {
 	 * @throws SQLException
 	 */
 	public int findChildrenCountByParent(String pid);
-	
 
 	/**
 	 * 删除分类

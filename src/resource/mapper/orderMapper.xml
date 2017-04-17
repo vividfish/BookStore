@@ -13,6 +13,7 @@
 			<id column="uid" property="uid" />
 		</association>
 	</resultMap>
+
 	<resultMap type="com.vivid.BookStore.order.domain.OrderItem"
 		id="orderItem">
 		<id column="orderItemId" property="orderItemId" />
@@ -21,15 +22,15 @@
 		<association property="book" column="bid"
 			javaType="com.vivid.BookStore.book.domain.Book">
 			<id column="bid" property="bid" />
-
+			<result column="currPrice" property="currPrice" />
+			<result column="image_b" property="image_b" />
 		</association>
 		<association property="order" column="oid"
 			javaType="com.vivid.BookStore.order.domain.Order">
-			
-			
-			</association>
-
+			<id column="oid" property="oid" />
+		</association>
 	</resultMap>
+
 	<select id="loadOrderItem" resultMap="orderItem">
 		select * from t_orderitem
 		where oid=#{oid}
@@ -43,6 +44,42 @@
 	</update>
 	<select id="load" resultMap="order">
 		select * from t_order where
-		oid=#{order}
+		oid=#{oid}
 	</select>
+	<select id="findByCriteria" resultMap="order">
+		select * from t_order where 1=1
+		<if test="oid!=null">
+			and oid = #{order.oid}
+		</if>
+		<if test="status != null">
+			and status = #{order.status}
+		</if>
+		<if test="order.user.uid != null">
+			and uid =#{order.uid}
+		</if>
+		order by orderBy limit #{pos},#{ps}
+	</select>
+	<select id="countByCriteria" parameterType="com.vivid.BookStore.order.domain.Order"
+		resultType="Integer">
+		select count(*) from t_order where 1=1
+		<if test="oid!=null">
+			and oid = #{oid}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		<if test="user.uid != null">
+			and uid =#{uid}
+		</if>
+	</select>
+
+	<insert id="addOrder" parameterMap="order">
+		insert into t_order
+		values(#{oid},#{ordertime},#{total},#{status},#{address},#{uid})
+	</insert>
+	<insert id="addOrderItem" parameterMap="orderItem">
+		insert into t_orderitem
+		values(#{orderItemId},#{quantity},#{subtotal},#{bid},#{bname},#{currPrice},#{image_b},#{oid})
+	</insert>
+
 </mapper>

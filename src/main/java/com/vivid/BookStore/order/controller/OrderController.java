@@ -38,17 +38,6 @@ public class OrderController {
 	 * @param req
 	 * @return
 	 */
-	private int getPc(HttpServletRequest req) {
-		int pc = 1;
-		String param = req.getParameter("pc");
-		if (param != null && !param.trim().isEmpty()) {
-			try {
-				pc = Integer.parseInt(param);
-			} catch (RuntimeException e) {
-			}
-		}
-		return pc;
-	}
 
 	/**
 	 * 截取url，页面中的分页导航中需要使用它做为超链接的目标！
@@ -60,17 +49,6 @@ public class OrderController {
 	 * http://localhost:8080/goods/BookServlet?methed=findByCategory&cid=xxx&pc=
 	 * 3 /goods/BookServlet + methed=findByCategory&cid=xxx&pc=3
 	 */
-	private String getUrl(HttpServletRequest req) {
-		String url = req.getRequestURI() + "?" + req.getQueryString();
-		/*
-		 * 如果url中存在pc参数，截取掉，如果不存在那就不用截取。
-		 */
-		int index = url.lastIndexOf("&pc=");
-		if (index != -1) {
-			url = url.substring(0, index);
-		}
-		return url;
-	}
 
 	/**
 	 * 支付准备
@@ -82,7 +60,7 @@ public class OrderController {
 	 * @throws IOException
 	 */
 	@RequestMapping("paymentPre")
-	public String paymentPre(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public String paymentPre(HttpServletRequest req) {
 		req.setAttribute("order", orderService.load(req.getParameter("oid")));
 		return "jsps/order/pay.jsp";
 	}
@@ -97,7 +75,7 @@ public class OrderController {
 	 * @throws IOException
 	 */
 	@RequestMapping("payment")
-	public String payment(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public String payment(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Properties props = new Properties();
 		props.load(this.getClass().getResourceAsStream("/conf/payment.properties"));
 		/*
@@ -143,8 +121,7 @@ public class OrderController {
 		sb.append("&").append("pr_NeedResponse=").append(pr_NeedResponse);
 		sb.append("&").append("hmac=").append(hmac);
 
-		resp.sendRedirect(sb.toString());
-		return null;
+		return "redirect:"+sb.toString();
 	}
 
 	/**
@@ -286,6 +263,7 @@ public class OrderController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("createOrder")
 	public String createOrder(String cartItemIds, HttpServletRequest req) {
 		/*
 		 * 1. 获取所有购物车条目的id，查询之
@@ -352,18 +330,10 @@ public class OrderController {
 	 * @throws IOException
 	 */
 	@RequestMapping("myOrders")
-	public String myOrders(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		/*
-		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
-		 */
-		int pc = getPc(req);
-		/*
-		 * 2. 得到url：...
-		 */
-		String url = getUrl(req);
-		/*
-		 * 3. 从当前session中获取User
-		 */
+	public String myOrders(int pc, HttpServletRequest req) {
+		if (pc == 0) {
+			pc = 1;
+		}
 		User user = (User) req.getSession().getAttribute("sessionUser");
 
 		/*
@@ -373,7 +343,6 @@ public class OrderController {
 		/*
 		 * 5. 给PageBean设置url，保存PageBean，转发到/jsps/book/list.jsp
 		 */
-		pb.setUrl(url);
 		req.setAttribute("pb", pb);
 		return "jsps/order/list.jsp";
 	}

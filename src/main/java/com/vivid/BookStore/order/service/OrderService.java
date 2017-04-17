@@ -1,15 +1,21 @@
 package com.vivid.BookStore.order.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vivid.BookStore.order.dao.OrderDao;
 import com.vivid.BookStore.order.domain.Order;
+import com.vivid.BookStore.order.domain.OrderItem;
+import com.vivid.BookStore.pager.PageConstants;
 import com.vivid.BookStore.pager.domain.Page;
+import com.vivid.BookStore.user.domain.User;
 
 @Service
 public class OrderService {
+	int ps = PageConstants.ORDER_PAGE_SIZE;
 	@Autowired
 	OrderDao orderDao;
 
@@ -30,6 +36,7 @@ public class OrderService {
 	 * @return
 	 */
 	public int findStatus(String oid) {
+
 		return orderDao.findStatus(oid);
 	}
 
@@ -42,6 +49,8 @@ public class OrderService {
 	@Transactional
 	public Order load(String oid) {
 		Order order = orderDao.load(oid);
+		List<OrderItem> orderItemList = orderDao.loadOrderItem(order.getOid());
+		order.setOrderItemList(orderItemList);
 		return order;
 	}
 
@@ -52,9 +61,10 @@ public class OrderService {
 	 */
 	@Transactional
 	public void createOrder(Order order) {
-		// JdbcUtils.beginTransaction();
-		orderDao.add(order);
-		// JdbcUtils.commitTransaction();
+		orderDao.addOrder(order);
+		for (OrderItem orderItem : order.getOrderItemList()) {
+			orderDao.addOrderItem(orderItem);
+		}
 	}
 
 	/**
@@ -66,10 +76,13 @@ public class OrderService {
 	 */
 	@Transactional
 	public Page<Order> myOrders(String uid, int pc) {
-		// JdbcUtils.beginTransaction();
-		Page<Order> pb = orderDao.findByUser(uid, pc);
-		// JdbcUtils.commitTransaction();
-		return pb;
+		Order order = new Order();
+		User user = new User();
+		user.setUid(uid);
+		order.setOwner(user);
+		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);
+		int tr = orderDao.countByCriteria(order);
+		return getPage(list, tr, pc);
 	}
 
 	/**
@@ -81,9 +94,23 @@ public class OrderService {
 	 */
 	@Transactional
 	public Page<Order> findByStatus(int status, int pc) {
-		// JdbcUtils.beginTransaction();
-		Page<Order> pb = orderDao.findByStatus(status, pc);
-		// JdbcUtils.commitTransaction();
+		Order order = new Order();
+		order.setStatus(status);
+		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);
+		for (Order morder : list) {
+			morder.setOrderItemList(orderDao.loadOrderItem(morder.getOid()));
+		}
+		int tr = orderDao.countByCriteria(order);
+		return getPage(list, tr, pc);
+	}
+
+	public Page<Order> getPage(List<Order> list, int tr, int pc) {
+		Page<Order> pb = new Page<Order>();
+		pb.setBeanList(list);
+		pb.setPc(pc);
+		pb.setPs(ps);
+		pb.setTr(tr);
+
 		return pb;
 	}
 
@@ -95,9 +122,9 @@ public class OrderService {
 	 */
 	@Transactional
 	public Page<Order> findAll(int pc) {
-		// JdbcUtils.beginTransaction();
-		Page<Order> pb = orderDao.findAll(pc);
-		// JdbcUtils.commitTransaction();
-		return pb;
+		Order order = new Order();
+		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);
+		int tr = orderDao.countByCriteria(order);
+		return getPage(list, tr, pc);
 	}
 }
