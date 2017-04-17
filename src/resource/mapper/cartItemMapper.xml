@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vivid.BookStore.cart.dao.CartItemDao">
+
+	<resultMap id="cartItem" type="com.vivid.BookStore.cart.domain.CartItem">
+		<id column="cartItemId" property="cartItemId" />
+		<result column="quantity" property="quantity" />
+		<association column="bid" property="book"
+			javaType="com.vivid.BookStore.book.domain.Book">
+			<id column="bid" property="bid" />
+			<result column="bname" property="bname" />
+			<result column="author" property="author" />
+			<result column="price" property="price" />
+			<result column="currPrice" property="currPrice" />
+			<result column="discount" property="discount" />
+			<result column="press" property="press" />
+			<result column="publishtime" property="publishtime" />
+			<result column="edition" property="edition" />
+			<result column="pageNum" property="pageNum" />
+			<result column="wordNum" property="wordNum" />
+			<result column="printtime" property="printtime" />
+			<result column="booksize" property="booksize" />
+			<result column="paper" property="paper" />
+			<result column="image_w" property="image_w" />
+			<result column="image_b" property="image_b" />
+
+		</association>
+		<association column="uid" property="user"
+			javaType="com.vivid.BookStore.user.domain.User">
+			<id column="uid" property="uid" />
+		</association>
+
+	</resultMap>
+
+	<select id="findByCartItemId" resultMap="cartItem">
+		select * from
+		t_cartItem
+		c, t_book b where c.bid=b.bid and
+		c.cartItemId=#{cartItemId}
+	</select>
+	<update id="updateQuantity">
+		update t_cartitem set quantity=#{quantity} where
+		cartItemId=#{cartItemId}
+	</update>
+	<insert id="addCartItem" parameterType="com.vivid.BookStore.cart.domain.CartItem">
+		insert into
+		t_cartitem(cartItemId, quantity, bid, uid)
+		values(#{cartItemId},#{quantity},#{book.bid},#{user.uid})
+	</insert>
+	<select id="findByUser" resultMap="cartItem">
+		select * from t_cartitem c,
+		t_book b where c.bid=b.bid and uid=#{uid} order by
+		c.orderBy
+	</select>
+	<select id="findByUidAndBid" resultMap="cartItem">
+		select * from t_cartitem
+		where uid=#{uid} and bid=#{bid}
+	</select>
+	<delete id="delete">
+		delete from t_cartitem where cartItemId in
+		<foreach collection="array" item="cartItemId" index="index"
+			open="(" close=")" separator=",">
+			#{cartItemId}
+		</foreach>
+	</delete>
+	<select id="loadCartItems" resultMap="cartItem">
+		select * from t_cartitem c, t_book b where c.bid=b.bid and cartItemId
+		in
+		<foreach collection="array" item="cartItemId" index="index"
+			open="(" close=")" separator=",">
+			#{cartItemId}
+		</foreach>
+	</select>
+</mapper>

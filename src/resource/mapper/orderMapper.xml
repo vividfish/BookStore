@@ -1,0 +1,48 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vivid.BookStore.order.dao.OrderDao">
+	<resultMap type="com.vivid.BookStore.order.domain.Order" id="order">
+		<id column="oid" property="oid" />
+		<result column="oid" property="oid" />
+		<result column="ordertime" property="ordertime" />
+		<result column="total" property="total" />
+		<result column="status" property="status" />
+		<result column="address" property="address" />
+		<association property="owner" column="uid"
+			javaType="com.vivid.BookStore.user.domain.User">
+			<id column="uid" property="uid" />
+		</association>
+	</resultMap>
+	<resultMap type="com.vivid.BookStore.order.domain.OrderItem"
+		id="orderItem">
+		<id column="orderItemId" property="orderItemId" />
+		<result column="quantity" property="quantity" />
+		<result column="subtotal" property="subtotal" />
+		<association property="book" column="bid"
+			javaType="com.vivid.BookStore.book.domain.Book">
+			<id column="bid" property="bid" />
+
+		</association>
+		<association property="order" column="oid"
+			javaType="com.vivid.BookStore.order.domain.Order">
+			
+			
+			</association>
+
+	</resultMap>
+	<select id="loadOrderItem" resultMap="orderItem">
+		select * from t_orderitem
+		where oid=#{oid}
+	</select>
+	<select id="findStatus" resultType="Integer">
+		select status from t_order
+		where oid=#{oid}
+	</select>
+	<update id="updateStatus">
+		update t_order set status=#{status} where oid=#{oid}
+	</update>
+	<select id="load" resultMap="order">
+		select * from t_order where
+		oid=#{order}
+	</select>
+</mapper>
