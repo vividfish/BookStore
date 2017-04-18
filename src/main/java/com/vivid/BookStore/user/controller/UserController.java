@@ -68,12 +68,10 @@ public class UserController {
 		/*
 		 * 2. 通过service得到校验结果
 		 */
-		System.out.println(email);
 		boolean b = userService.ajaxValidateEmail(email);
 		/*
 		 * 3. 发给客户端
 		 */
-		System.out.println(b);
 		return String.valueOf(b);
 	}
 

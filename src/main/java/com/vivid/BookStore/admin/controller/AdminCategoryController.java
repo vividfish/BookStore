@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.vivid.BookStore.book.service.BookService;
 import com.vivid.BookStore.category.domain.Category;
@@ -30,9 +31,10 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminFindAllCategory")
 	public String findAll(HttpServletRequest req) {
 		req.setAttribute("parents", categoryService.findAll());
-		return "adminjsps/admin/category/list.jsp";
+		return "/adminjsps/admin/category/list.jsp";
 	}
 
 	/**
@@ -44,6 +46,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminAddParent")
 	public String addParent(Category parent, HttpServletRequest req) {
 		/*
 		 * 1. 封装表单数据到Category中 2. 调用service的add()方法完成添加 3.
@@ -54,6 +57,7 @@ public class AdminCategoryController {
 		return findAll(req);
 	}
 
+	@RequestMapping("admin/AdminAddChild")
 	public String addChild(Category child, HttpServletRequest req) {
 		/*
 		 * 1. 封装表单数据到Category中 2. 需要手动的把表单中的pid映射到child对象中 2.
@@ -80,13 +84,14 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminAddChildPre")
 	public String addChildPre(HttpServletRequest req) {
 		String pid = req.getParameter("pid");// 当前点击的父分类id
 		List<Category> parents = categoryService.findParents();
 		req.setAttribute("pid", pid);
 		req.setAttribute("parents", parents);
 
-		return "f:/adminjsps/admin/category/add2.jsp";
+		return "/adminjsps/admin/category/add2.jsp";
 	}
 
 	/**
@@ -98,6 +103,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminEditParentPre")
 	public String editParentPre(HttpServletRequest req) {
 		/*
 		 * 1. 获取链接中的cid 2. 使用cid加载Category 3. 保存Category 4.
@@ -106,7 +112,7 @@ public class AdminCategoryController {
 		String cid = req.getParameter("cid");
 		Category parent = categoryService.load(cid);
 		req.setAttribute("parent", parent);
-		return "f:/adminjsps/admin/category/edit.jsp";
+		return "/adminjsps/admin/category/edit.jsp";
 	}
 
 	/**
@@ -118,6 +124,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminEditParent")
 	public String editParent(Category parent, HttpServletRequest req) {
 		/*
 		 * 1. 封装表单数据到Category中 2. 调用service方法完成修改 3. 转发到list.jsp显示所有分类（return
@@ -136,6 +143,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminEditChildPre")
 	public String editChildPre(HttpServletRequest req) {
 		/*
 		 * 1. 获取链接参数cid，通过cid加载Category，保存之 2. 查询出所有1级分类，保存之 3. 转发到edit2.jsp
@@ -145,7 +153,7 @@ public class AdminCategoryController {
 		req.setAttribute("child", child);
 		req.setAttribute("parents", categoryService.findParents());
 
-		return "f:/adminjsps/admin/category/edit2.jsp";
+		return "/adminjsps/admin/category/edit2.jsp";
 	}
 
 	/**
@@ -157,6 +165,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminEditChild")
 	public String editChild(Category child, HttpServletRequest req) {
 		/*
 		 * 1. 封装表单参数到Category child 2. 把表单中的pid封装到child, ... 3.
@@ -180,6 +189,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminDeleteParent")
 	public String deleteParent(HttpServletRequest req) {
 		/*
 		 * 1. 获取链接参数cid，它是一个1级分类的id 2. 通过cid，查看该父分类下子分类的个数 3.
@@ -189,7 +199,7 @@ public class AdminCategoryController {
 		int cnt = categoryService.findChildrenCountByParent(cid);
 		if (cnt > 0) {
 			req.setAttribute("msg", "该分类下还有子分类，不能删除！");
-			return "f:/adminjsps/msg.jsp";
+			return "/adminjsps/msg.jsp";
 		} else {
 			categoryService.delete(cid);
 			return findAll(req);
@@ -205,6 +215,7 @@ public class AdminCategoryController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminDeleteChild")
 	public String deleteChild(HttpServletRequest req) {
 		/*
 		 * 1. 获取cid，即2级分类id 2. 获取该分类下的图书个数 3. 如果大于零，保存错误信息，转发到msg.jsp 4.
@@ -214,7 +225,7 @@ public class AdminCategoryController {
 		int cnt = bookService.findBookCountByCategory(cid);
 		if (cnt > 0) {
 			req.setAttribute("msg", "该分类下还存在图书，不能删除！");
-			return "f:/adminjsps/msg.jsp";
+			return "/adminjsps/msg.jsp";
 		} else {
 			categoryService.delete(cid);
 			return findAll(req);

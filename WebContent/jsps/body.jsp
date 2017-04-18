@@ -30,8 +30,5 @@ a {
 	<h1>欢迎进入喜悦教育网上书城</h1>
 
 
-	<a href="http://www.csdn.net/" target="_top">
-		<img src="/BookStore/images/csdn.jpg" border="0" />
-	</a>
 </body>
 </html>

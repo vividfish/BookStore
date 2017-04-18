@@ -14,5 +14,5 @@ public interface AdminDao {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Admin find(@Param("adminname") String adminname, String adminpwd);
+	public Admin find(@Param("adminname") String adminname, @Param("adminpwd") String adminpwd);
 }

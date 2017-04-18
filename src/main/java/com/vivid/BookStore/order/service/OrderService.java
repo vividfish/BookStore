@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.vivid.BookStore.order.dao.OrderDao;
 import com.vivid.BookStore.order.domain.Order;
@@ -46,7 +45,6 @@ public class OrderService {
 	 * @param oid
 	 * @return
 	 */
-	@Transactional
 	public Order load(String oid) {
 		Order order = orderDao.load(oid);
 		List<OrderItem> orderItemList = orderDao.loadOrderItem(order.getOid());
@@ -59,7 +57,6 @@ public class OrderService {
 	 * 
 	 * @param order
 	 */
-	@Transactional
 	public void createOrder(Order order) {
 		orderDao.addOrder(order);
 		for (OrderItem orderItem : order.getOrderItemList()) {
@@ -70,15 +67,12 @@ public class OrderService {
 	/**
 	 * 我的订单
 	 * 
-	 * @param uid
+	 * @param user
 	 * @param pc
 	 * @return
 	 */
-	@Transactional
-	public Page<Order> myOrders(String uid, int pc) {
+	public Page<Order> myOrders(User user, int pc) {
 		Order order = new Order();
-		User user = new User();
-		user.setUid(uid);
 		order.setOwner(user);
 		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);
 		int tr = orderDao.countByCriteria(order);
@@ -92,8 +86,8 @@ public class OrderService {
 	 * @param pc
 	 * @return
 	 */
-	@Transactional
-	public Page<Order> findByStatus(int status, int pc) {
+	// @Transactional
+	public Page<Order> findByStatus(String status, int pc) {
 		Order order = new Order();
 		order.setStatus(status);
 		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);
@@ -120,7 +114,6 @@ public class OrderService {
 	 * @param pc
 	 * @return
 	 */
-	@Transactional
 	public Page<Order> findAll(int pc) {
 		Order order = new Order();
 		List<Order> list = orderDao.findByCriteria(order, (pc - 1) * ps, ps);

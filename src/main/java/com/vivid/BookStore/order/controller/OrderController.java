@@ -40,17 +40,6 @@ public class OrderController {
 	 */
 
 	/**
-	 * 截取url，页面中的分页导航中需要使用它做为超链接的目标！
-	 * 
-	 * @param req
-	 * @return
-	 */
-	/*
-	 * http://localhost:8080/goods/BookServlet?methed=findByCategory&cid=xxx&pc=
-	 * 3 /goods/BookServlet + methed=findByCategory&cid=xxx&pc=3
-	 */
-
-	/**
 	 * 支付准备
 	 * 
 	 * @param req
@@ -121,7 +110,7 @@ public class OrderController {
 		sb.append("&").append("pr_NeedResponse=").append(pr_NeedResponse);
 		sb.append("&").append("hmac=").append(hmac);
 
-		return "redirect:"+sb.toString();
+		return "redirect:" + sb.toString();
 	}
 
 	/**
@@ -280,7 +269,7 @@ public class OrderController {
 		Order order = new Order();
 		order.setOid(UUID.randomUUID().toString().replace("-", ""));// 设置主键
 		order.setOrdertime(String.format("%tF %<tT", new Date()));// 下单时间
-		order.setStatus(1);// 设置状态，1表示未付款
+		order.setStatus("1");// 设置状态，1表示未付款
 		order.setAddress(req.getParameter("address"));// 设置收货地址
 		User owner = (User) req.getSession().getAttribute("sessionUser");
 		order.setOwner(owner);// 设置订单所有者
@@ -330,19 +319,24 @@ public class OrderController {
 	 * @throws IOException
 	 */
 	@RequestMapping("myOrders")
-	public String myOrders(int pc, HttpServletRequest req) {
-		if (pc == 0) {
+	public String myOrders(Integer pc, HttpServletRequest req) {
+
+		if (pc == null) {
 			pc = 1;
 		}
 		User user = (User) req.getSession().getAttribute("sessionUser");
-
+		if (user == null) {
+			return "jsp/login.jsp";
+		}
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
-		Page<Order> pb = orderService.myOrders(user.getUid(), pc);
+
+		Page<Order> pb = orderService.myOrders(user, pc);
 		/*
 		 * 5. 给PageBean设置url，保存PageBean，转发到/jsps/book/list.jsp
 		 */
+		pb.setUrl("myOrders?");
 		req.setAttribute("pb", pb);
 		return "jsps/order/list.jsp";
 	}

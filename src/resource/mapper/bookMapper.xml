@@ -54,11 +54,11 @@
 			and cid = #{category.cid}
 		</if>
 		<if test="bname != null">
-			and bname like %#{bname}% </if>
+			and bname like CONCAT('%',#{bname},'%')   </if>
 		<if test="press != null">
-			and press like %#{press}% </if>
+			and press like CONCAT('%',#{press},'%')   </if>
 		<if test="author != null">
-			and author like %#{author}% </if>
+			and author like CONCAT('%',#{author},'%')   </if>
 	</select>
 
 	<select id="findBook" resultMap="book"
@@ -71,11 +71,11 @@
 			and cid = #{book.category.cid}
 		</if>
 		<if test="book.bname != null">
-			and bname like %#{book.bname}% </if>
+			and bname like CONCAT('%',#{book.bname},'%') </if>
 		<if test="book.press != null">
-			and press like %#{book.press}% </if>
+			and press like CONCAT('%',#{book.press},'%') </if>
 		<if test="book.author != null">
-			and author like %#{book.author}% </if>
+			and author like CONCAT('%',#{book.author},'%') </if>
 		order by orderBy limit #{pos},#{ps}
 	</select>
 

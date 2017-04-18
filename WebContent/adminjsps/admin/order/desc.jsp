@@ -86,10 +86,10 @@
 			<span class="price_t">&yen;${order.total }</span><br/>
 
 <c:if test="${order.status eq 2 and btn eq 'deliver' }">
-	<a id="deliver" href="<c:url value='/admin/AdminOrderServlet?method=deliver&oid=${order.oid }'/>">发　　货</a>
+	<a id="deliver" href="<c:url value='/admin/AdminDeliver?oid=${order.oid }'/>">发　　货</a>
 </c:if>
 <c:if test="${order.status eq 1 and btn eq 'cancel' }">
-	<a id="cancel" href="<c:url value='/admin/AdminOrderServlet?method=cancel&oid=${order.oid }'/>">取　　消</a>
+	<a id="cancel" href="<c:url value='/admin/AdminCancel?oid=${order.oid }'/>">取　　消</a>
 </c:if>
 		</div>
 	</div>

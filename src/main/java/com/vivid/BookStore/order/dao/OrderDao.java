@@ -29,4 +29,8 @@ public interface OrderDao {
 
 	public int countByCriteria(Order order);
 
+	public List<Order> findAll(@Param("pos")int i,@Param("ps") int ps);
+
+	public int countAll();
+
 }

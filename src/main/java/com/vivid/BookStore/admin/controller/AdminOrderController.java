@@ -4,60 +4,19 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.vivid.BookStore.order.domain.Order;
 import com.vivid.BookStore.order.service.OrderService;
 import com.vivid.BookStore.pager.domain.Page;
 
-
 @Controller
-public class AdminOrderController  {
+public class AdminOrderController {
 	@Autowired
 	OrderService orderService;
-
-	/**
-	 * 获取当前页码
-	 * 
-	 * @param req
-	 * @return
-	 */
-	private int getPc(HttpServletRequest req) {
-		int pc = 1;
-		String param = req.getParameter("pc");
-		if (param != null && !param.trim().isEmpty()) {
-			try {
-				pc = Integer.parseInt(param);
-			} catch (RuntimeException e) {
-			}
-		}
-		return pc;
-	}
-
-	/**
-	 * 截取url，页面中的分页导航中需要使用它做为超链接的目标！
-	 * 
-	 * @param req
-	 * @return
-	 */
-	/*
-	 * http://localhost:8080/goods/BookServlet?methed=findByCategory&cid=xxx&pc=
-	 * 3 /goods/BookServlet + methed=findByCategory&cid=xxx&pc=3
-	 */
-	private String getUrl(HttpServletRequest req) {
-		String url = req.getRequestURI() + "?" + req.getQueryString();
-		/*
-		 * 如果url中存在pc参数，截取掉，如果不存在那就不用截取。
-		 */
-		int index = url.lastIndexOf("&pc=");
-		if (index != -1) {
-			url = url.substring(0, index);
-		}
-		return url;
-	}
 
 	/**
 	 * 查看所有订单
@@ -68,15 +27,18 @@ public class AdminOrderController  {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findAll(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping("admin/AdminFindAllOrder")
+	public String findAll(Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "AdminFindAllOrder";
 
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
@@ -87,7 +49,7 @@ public class AdminOrderController  {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "f:/adminjsps/admin/order/list.jsp";
+		return "/adminjsps/admin/order/list.jsp";
 	}
 
 	/**
@@ -99,19 +61,22 @@ public class AdminOrderController  {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByStatus(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping("admin/AdminFindByStatus")
+	public String findByStatus(Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "/BookStore/AdminFindByStatus?";
 		/*
 		 * 3. 获取链接参数：status
 		 */
-		int status = Integer.parseInt(req.getParameter("status"));
+		String status = req.getParameter("status");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
@@ -121,7 +86,7 @@ public class AdminOrderController  {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "f:/adminjsps/admin/order/list.jsp";
+		return "/adminjsps/admin/order/list.jsp";
 	}
 
 	/**
@@ -133,7 +98,8 @@ public class AdminOrderController  {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String load(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping("admin/AdminLoadOrder")
+	public String load(HttpServletRequest req) {
 		String oid = req.getParameter("oid");
 		Order order = orderService.load(oid);
 		req.setAttribute("order", order);
@@ -151,7 +117,8 @@ public class AdminOrderController  {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String cancel(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping("admin/AdminCancel")
+	public String cancel(HttpServletRequest req) {
 		String oid = req.getParameter("oid");
 		/*
 		 * 校验订单状态
@@ -160,12 +127,12 @@ public class AdminOrderController  {
 		if (status != 1) {
 			req.setAttribute("code", "error");
 			req.setAttribute("msg", "状态不对，不能取消！");
-			return "f:/adminjsps/msg.jsp";
+			return "/adminjsps/msg.jsp";
 		}
 		orderService.updateStatus(oid, 5);// 设置状态为取消！
 		req.setAttribute("code", "success");
-		req.setAttribute("msg", "您的订单已取消，您不后悔吗！");
-		return "f:/adminjsps/msg.jsp";
+		req.setAttribute("msg", "此订单已取消");
+		return "/adminjsps/msg.jsp";
 	}
 
 	/**
@@ -177,7 +144,8 @@ public class AdminOrderController  {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String deliver(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping("admin/AdminDeliver")
+	public String deliver(HttpServletRequest req) {
 		String oid = req.getParameter("oid");
 		/*
 		 * 校验订单状态
@@ -186,11 +154,11 @@ public class AdminOrderController  {
 		if (status != 2) {
 			req.setAttribute("code", "error");
 			req.setAttribute("msg", "状态不对，不能发货！");
-			return "f:/adminjsps/msg.jsp";
+			return "/adminjsps/msg.jsp";
 		}
 		orderService.updateStatus(oid, 3);// 设置状态为取消！
 		req.setAttribute("code", "success");
-		req.setAttribute("msg", "您的订单已发货，请查看物流，马上确认吧！");
-		return "f:/adminjsps/msg.jsp";
+		req.setAttribute("msg", "订单已发货");
+		return "/adminjsps/msg.jsp";
 	}
 }

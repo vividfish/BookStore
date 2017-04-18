@@ -17,17 +17,14 @@
 		select * from t_category
 		where pid=#{pid} order by orderBy
 	</select>
+	<select id="findParents" resultMap="category">
+	select * from t_category where pid is null order by orderBy
+	</select>
 	<insert id="add" parameterType="com.vivid.BookStore.category.domain.Category">
 		insert into
 		t_category(cid,cname,pid,`desc`)
 		values(#{cid},#{cname},#{parent.cid},#{desc})
 	</insert>
-	<select id="findparents" resultMap="category">
-		select * from
-		t_category
-		where
-		pid is null order by orderBy
-	</select>
 	<select id="load" resultType="com.vivid.BookStore.category.domain.Category">
 		select * from t_category where
 		cid=#{cid}

@@ -43,7 +43,7 @@
 		<c:forEach items="${parents}" var="parent">
 		<c:forEach items="${parent.children}" var="child">
 		bar.add("${parent.cname}", "${child.cname}",
-				"/BookStore/findByCategory?cid=${child.cid}", "body");
+				"/BookStore/findBookByCategory?cid=${child.cid}", "body");
 		</c:forEach>
 		</c:forEach>
 

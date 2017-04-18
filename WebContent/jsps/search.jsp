@@ -45,8 +45,7 @@
   </head>
   
   <body>
-    <form action="<c:url value='/BookServlet'/>" method="get" target="body" id="form1">
-    	<input type="hidden" name="method" value="findByBname"/>
+    <form action="<c:url value='/findBookByBname'/>" method="get" target="body" id="form1">
     	<input type="text" name="bname"/>
     	<span>
     		<a href="javascript:document.getElementById('form1').submit();"><img align="top" border="0" src="../images/btn.bmp"/></a>

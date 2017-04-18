@@ -1,4 +1,5 @@
 /META-INF/
+/mapper/
 /com/
 /conf/
-/mapper/
+/log4j.properties

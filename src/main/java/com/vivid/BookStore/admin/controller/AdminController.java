@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.vivid.BookStore.admin.domain.Admin;
 import com.vivid.BookStore.admin.service.AdminService;
@@ -23,6 +24,7 @@ public class AdminController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("AdminLogin")
 	public String login(Admin form, HttpServletRequest req) {
 		/*
 		 * 1. 封装表单数据到Admin
@@ -30,10 +32,10 @@ public class AdminController {
 		Admin admin = adminService.login(form);
 		if (admin == null) {
 			req.setAttribute("msg", "用户名或密码错误！");
-			return "/adminjsps/login.jsp";
+			return "adminjsps/login.jsp";
 		}
 		req.getSession().setAttribute("admin", admin);
-		return "r:/adminjsps/admin/index.jsp";
+		return "adminjsps/admin/index.jsp";
 	}
 
 }

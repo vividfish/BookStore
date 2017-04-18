@@ -21,6 +21,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.vivid.BookStore.book.domain.Book;
 import com.vivid.BookStore.book.service.BookService;
@@ -35,7 +36,7 @@ public class AdminBookController {
 	@Autowired
 	CategoryService categoryService;
 
-	@RequestMapping("/AdminAddBook")
+	@RequestMapping("admin/AdminAddBook")
 	public String addBook(Book book, HttpServletRequest req) throws ServletException, IOException {
 		req.setCharacterEncoding("utf-8");
 		String savepath = req.getServletContext().getRealPath("/book_img");
@@ -178,9 +179,10 @@ public class AdminBookController {
 
 		// 保存成功信息转发到msg.jsp
 		req.setAttribute("msg", "添加图书成功！");
-		return "redirect:adminjsps/msg.jsp";
+		return "redirect:/adminjsps/msg.jsp";
 	}
 
+	@RequestMapping("admin/AdminDeleteBook")
 	public String delete(HttpServletRequest req) {
 		String bid = req.getParameter("bid");
 
@@ -195,7 +197,7 @@ public class AdminBookController {
 		bookService.delete(bid);// 删除数据库的记录
 
 		req.setAttribute("msg", "删除图书成功！");
-		return "adminjsps/msg.jsp";
+		return "/adminjsps/msg.jsp";
 	}
 
 	/**
@@ -207,6 +209,7 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminEditBook")
 	public String edit(Book book, HttpServletRequest req) {
 		/*
 		 * 1. 把表单数据封装到Book对象中 2. 封装cid到Category中 3. 把Category赋给Book 4.
@@ -215,7 +218,7 @@ public class AdminBookController {
 
 		bookService.edit(book);
 		req.setAttribute("msg", "修改图书成功！");
-		return "adminjsps/msg.jsp";
+		return "/adminjsps/msg.jsp";
 	}
 
 	/**
@@ -227,6 +230,7 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminLoadBook")
 	public String load(HttpServletRequest req) {
 		/*
 		 * 1. 获取bid，得到Book对象，保存之
@@ -242,13 +246,14 @@ public class AdminBookController {
 		/*
 		 * 3. 获取当前图书所属的一级分类下所有2级分类
 		 */
-		String pid = book.getCategory().getParent().getCid();
+		Category category = categoryService.load(book.getCategory().getCid());
+		String pid = category.getCid();
 		req.setAttribute("children", categoryService.findChildren(pid));
 
 		/*
 		 * 4. 转发到desc.jsp显示
 		 */
-		return "adminjsps/admin/book/desc.jsp";
+		return "/adminjsps/admin/book/desc.jsp";
 	}
 
 	/**
@@ -260,25 +265,25 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminAddPre")
 	public String addPre(HttpServletRequest req) {
 		/*
 		 * 1. 获取所有一级分类，保存之 2. 转发到add.jsp，该页面会在下拉列表中显示所有一级分类
 		 */
 		List<Category> parents = categoryService.findParents();
 		req.setAttribute("parents", parents);
-		return "adminjsps/admin/book/add.jsp";
+		return "/adminjsps/admin/book/add.jsp";
 	}
 
-	public String ajaxFindChildren(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	@RequestMapping("admin/AdminajaxFindChildren")
+	@ResponseBody
+	public String ajaxFindChildren(String pid) {
 		/*
 		 * 1. 获取pid 2. 通过pid查询出所有2级分类 3. 把List<Category>转换成json，输出给客户端
 		 */
-		String pid = req.getParameter("pid");
 		List<Category> children = categoryService.findChildren(pid);
 		String json = toJson(children);
-		resp.getWriter().print(json);
-		return null;
+		return json;
 	}
 
 	// {"cid":"fdsafdsa", "cname":"fdsafdas"}
@@ -314,6 +319,7 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	@RequestMapping("admin/AdminFindCategoryAll")
 	public String findCategoryAll(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		/*
@@ -321,7 +327,7 @@ public class AdminBookController {
 		 */
 		List<Category> parents = categoryService.findAll();
 		req.setAttribute("parents", parents);
-		return "adminjsps/admin/book/left.jsp";
+		return "/adminjsps/admin/book/left.jsp";
 	}
 
 	/**
@@ -330,17 +336,6 @@ public class AdminBookController {
 	 * @param req
 	 * @return
 	 */
-	private int getPc(HttpServletRequest req) {
-		int pc = 1;
-		String param = req.getParameter("pc");
-		if (param != null && !param.trim().isEmpty()) {
-			try {
-				pc = Integer.parseInt(param);
-			} catch (RuntimeException e) {
-			}
-		}
-		return pc;
-	}
 
 	/**
 	 * 截取url，页面中的分页导航中需要使用它做为超链接的目标！
@@ -352,17 +347,6 @@ public class AdminBookController {
 	 * http://localhost:8080/goods/BookServlet?methed=findByCategory&cid=xxx&pc=
 	 * 3 /goods/BookServlet + methed=findByCategory&cid=xxx&pc=3
 	 */
-	private String getUrl(HttpServletRequest req) {
-		String url = req.getRequestURI() + "?" + req.getQueryString();
-		/*
-		 * 如果url中存在pc参数，截取掉，如果不存在那就不用截取。
-		 */
-		int index = url.lastIndexOf("&pc=");
-		if (index != -1) {
-			url = url.substring(0, index);
-		}
-		return url;
-	}
 
 	/**
 	 * 按分类查
@@ -373,20 +357,21 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByCategory(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	@RequestMapping("admin/AdminFindByCategory")
+	public String findByCategory(String cid, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "/admin/AdminFindByCategory?";
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String cid = req.getParameter("cid");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到Page
 		 */
@@ -396,7 +381,7 @@ public class AdminBookController {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "adminjsps/admin/book/list.jsp";
+		return "/adminjsps/admin/book/list.jsp";
 	}
 
 	/**
@@ -408,19 +393,19 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByAuthor(HttpServletRequest req) {
+	@RequestMapping("admin/AdminFindByAuthor")
+	public String findByAuthor(String author, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
-		/*
-		 * 3. 获取查询条件，本方法就是cid，即分类的id
-		 */
-		String author = req.getParameter("author");
+		String url = "/BookStore/admin/AdminFindByCategory?";
+
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到Page
 		 */
@@ -430,7 +415,7 @@ public class AdminBookController {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "adminjsps/admin/book/list.jsp";
+		return "/adminjsps/admin/book/list.jsp";
 	}
 
 	/**
@@ -442,19 +427,25 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByPress(HttpServletRequest req) {
+	@RequestMapping("admin/AdminFindByPress")
+	public String findByPress(String press, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "/BookStore/admin/AdminFindByPress?";
+
+		/*
+		 * 2. 得到url：...
+		 */
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String press = req.getParameter("press");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到Page
 		 */
@@ -464,7 +455,7 @@ public class AdminBookController {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "adminjsps/admin/book/list.jsp";
+		return "/adminjsps/admin/book/list.jsp";
 	}
 
 	/**
@@ -476,19 +467,19 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByBname(HttpServletRequest req) {
+	@RequestMapping("admin/AdminFindByBname")
+	public String findByBname(String bname, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
-		/*
-		 * 3. 获取查询条件，本方法就是cid，即分类的id
-		 */
-		String bname = req.getParameter("bname");
+		String url = "/BookStore/admin/AdminFindByBname?";
+
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到Page
 		 */
@@ -498,7 +489,7 @@ public class AdminBookController {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "adminjsps/admin/book/list.jsp";
+		return "/adminjsps/admin/book/list.jsp";
 	}
 
 	/**
@@ -510,15 +501,20 @@ public class AdminBookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public String findByCombination(Book book, HttpServletRequest req) {
+	@RequestMapping("admin/AdminFindByCombination")
+	public String findByCombination(Book book, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "/BookStore/admin/AdminFindByCombination?";
+
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
@@ -531,12 +527,12 @@ public class AdminBookController {
 		 */
 		pb.setUrl(url);
 		req.setAttribute("pb", pb);
-		return "adminjsps/admin/book/list.jsp";
+		return "/adminjsps/admin/book/list.jsp";
 	}
 
 	private String error(String msg, HttpServletRequest request) {
 		request.setAttribute("msg", msg);
 		request.setAttribute("parents", categoryService.findParents());// 所有一级分类
-		return "redirect:adminjsps/admin/book/add.jsp";
+		return "redirect:/adminjsps/admin/book/add.jsp";
 	}
 }

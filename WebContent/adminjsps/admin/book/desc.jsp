@@ -63,9 +63,9 @@
 		$.ajax({
 			async : true,
 			cache : false,
-			url : "/goods/admin/AdminBookServlet",
+			url : "/BookStore/admin/AdminajaxFindChildren",
 			data : {
-				method : "ajaxFindChildren",
+
 				pid : pid
 			},
 			type : "POST",
@@ -88,14 +88,14 @@
 	 * 点击编辑按钮时执行本函数
 	 */
 	function editForm() {
-		$("#method").val("edit");
+		$("#form").action="<c:url value='/admin/AdminEditBook'/>";
 		$("#form").submit();
 	}
 	/*
 	 * 点击删除按钮时执行本函数
 	 */
 	function deleteForm() {
-		$("#method").val("delete");
+		$("#form").action="<c:url value='/admin/AdminDeleteBook'/>";
 		$("#form").submit();
 	}
 </script>
@@ -147,9 +147,8 @@
 
 	<div id='formDiv'>
 		<div class="sm">&nbsp;</div>
-		<form action="<c:url value='/admin/AdminBookServlet'/>" method="post"
+		<form action="<c:url value='/admin/AdminEditBook'/>" method="post"
 			id="form">
-			<input type="hidden" name="method" id="method" />
 			<input type="hidden" name="bid" value="${book.bid }" />
 			<img align="top" src="<c:url value='/${book.image_w }'/>" class="tp" />
 			<div style="float: left;">

@@ -55,7 +55,7 @@ a:hover {
 					target="body">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;
 		  <a href="<c:url value='/jsps/user/pwd.jsp'/>" target="body">修改密码</a>&nbsp;&nbsp;|&nbsp;&nbsp;
 		  <a href="<c:url value='/quit'/>" target="_parent">退出</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-		  <a href="/BookStore/contact.shtml" target="_top">联系我们</a>
+		  <a href="/BookStore/contact.html" target="_top">联系我们</a>
 			</c:otherwise>
 		</c:choose>
 

@@ -24,8 +24,7 @@
   </head>
   
   <body>
-  <form action="<c:url value='/BookServlet'/>" method="get">
-  	<input type="hidden" name="method" value="findByCombination"/>
+  <form action="<c:url value='/findBookByCombination'/>" method="get">
 <table align="center">
 	<tr>
 		<td>书名：</td>

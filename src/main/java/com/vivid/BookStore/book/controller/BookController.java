@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,17 +24,6 @@ public class BookController {
 	 * @param req
 	 * @return
 	 */
-	private int getPc(HttpServletRequest req) {
-		int pc = 1;
-		String param = req.getParameter("pc");
-		if (param != null && !param.trim().isEmpty()) {
-			try {
-				pc = Integer.parseInt(param);
-			} catch (RuntimeException e) {
-			}
-		}
-		return pc;
-	}
 
 	/**
 	 * 截取url，页面中的分页导航中需要使用它做为超链接的目标！
@@ -47,17 +35,6 @@ public class BookController {
 	 * http://localhost:8080/goods/BookServlet?methed=findByCategory&cid=xxx&pc=
 	 * 3 /goods/BookServlet + methed=findByCategory&cid=xxx&pc=3
 	 */
-	private String getUrl(HttpServletRequest req) {
-		String url = req.getRequestURI() + "?" + req.getQueryString();
-		/*
-		 * 如果url中存在pc参数，截取掉，如果不存在那就不用截取。
-		 */
-		int index = url.lastIndexOf("&pc=");
-		if (index != -1) {
-			url = url.substring(0, index);
-		}
-		return url;
-	}
 
 	/**
 	 * 按bid查询
@@ -85,20 +62,21 @@ public class BookController {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	@RequestMapping("findByCategory")
-	public String findByCategory(HttpServletRequest req) {
+	@RequestMapping("findBookByCategory")
+	public String findByCategory(String cid, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "findBookByCategory";
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String cid = req.getParameter("cid");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
@@ -121,19 +99,20 @@ public class BookController {
 	 * @throws IOException
 	 */
 	@RequestMapping("findBookByAuthor")
-	public String findBookByAuthor(HttpServletRequest req, HttpServletResponse resp) {
+	public String findBookByAuthor(String author, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "findBookByAuthor?author=" + author;
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String author = req.getParameter("author");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
@@ -156,20 +135,20 @@ public class BookController {
 	 * @throws IOException
 	 */
 	@RequestMapping("findBookByPress")
-	public String findBookByPress(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public String findBookByPress(String press, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "findBookByPress?press=" + press;
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String press = req.getParameter("press");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
@@ -192,19 +171,20 @@ public class BookController {
 	 * @throws IOException
 	 */
 	@RequestMapping("findBookByBname")
-	public String findBookByBname(HttpServletRequest req, HttpServletResponse resp) {
+	public String findBookByBname(String bname, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "findBookByBname?bname=" + bname;
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */
-		String bname = req.getParameter("bname");
 		/*
 		 * 4. 使用pc和cid调用service#findByCategory得到PageBean
 		 */
@@ -227,15 +207,18 @@ public class BookController {
 	 * @throws IOException
 	 */
 	@RequestMapping("findBookByCombination")
-	public String findByCombination(Book book, HttpServletRequest req) {
+	public String findByCombination(Book book, Integer pc, HttpServletRequest req) {
 		/*
 		 * 1. 得到pc：如果页面传递，使用页面的，如果没传，pc=1
 		 */
-		int pc = getPc(req);
+		if (pc == null) {
+			pc = 1;
+		}
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = getUrl(req);
+		String url = "findBookByCombination?bname=" + book.getBname() + "&author=" + book.getAuthor() + "&press="
+				+ book.getPress();
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */

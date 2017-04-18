@@ -1,17 +1,13 @@
-<%@ page language="java" import="java.util.*" pageEncoding="GBK"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>pay.jsp</title>
 
-<meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="cache-control" content="no-cache">
-<meta http-equiv="expires" content="0">
-<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-<meta http-equiv="description" content="This is my page">
 <!--
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
@@ -29,16 +25,18 @@
 </script>
 </head>
 
+
 <body>
 	<div class="divContent">
-		<span class="spanPrice">Ö§¸¶½ğ¶î£º</span><span class="price_t">&yen;${order.total }</span>
-		<span class="spanOid">±àºÅ£º${order.oid }</span>
+		<span class="spanPrice">æ”¯ä»˜é‡‘é¢ï¼š</span><span class="price_t">&yen;${requestScope.WIDtotal_fee}</span>
+		<span class="spanOid">ç¼–å·ï¼š${WIDout_trade_no}</span>
 	</div>
-	<form action="<c:url value='/payment'/>" method="post" id="form1"
+	<form action="<c:url value='/payByEbank.do'/>" method="post" id="form1"
 		target="_top">
-		<input type="hidden" name="oid" value="${order.oid }" />
+		<input type="hidden" name="oid" value="${WIDout_trade_no}" />
+		<input type="hidden" name="price" value="${WIDtotal_fee}" />
 		<div class="divBank">
-			<div class="divText">Ñ¡ÔñÍøÉÏÒøĞĞ</div>
+			<div class="divText">é€‰æ‹©ç½‘ä¸Šé“¶è¡Œ</div>
 			<div style="margin-left: 20px;">
 				<div style="margin-bottom: 20px;">
 					<input id="ICBC-NET-B2C" type="radio" name="yh"
@@ -158,7 +156,7 @@
 				</div>
 			</div>
 			<div style="margin: 40px;">
-				<a href="javascript:void $('#form1').submit();" class="linkNext">ÏÂÒ»²½</a>
+				<a href="javascript:void $('#form1').submit();" class="linkNext">ä¸‹ä¸€æ­¥</a>
 			</div>
 		</div>
 	</form>

@@ -64,17 +64,6 @@
 			</li>
 		</c:forEach>
 
-
-
-
-
-
-
-
-
-
-
-
 	</ul>
 
 	<div style="float: left; width: 100%; text-align: center;">
