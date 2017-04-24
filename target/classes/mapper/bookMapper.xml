@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vivid.BookStore.book.dao.BookDao">
+	<resultMap type="com.vivid.BookStore.book.domain.Book" id="book">
+		<id column="bid" property="bid" />
+		<result column="bname" property="bname" />
+		<result column="author" property="author" />
+		<result column="price" property="price" />
+		<result column="currPrice" property="currPrice" />
+		<result column="discount" property="discount" />
+		<result column="press" property="press" />
+		<result column="publishtime" property="publishtime" />
+		<result column="edition" property="edition" />
+		<result column="pageNum" property="pageNum" />
+		<result column="wordNum" property="wordNum" />
+		<result column="printtime" property="printtime" />
+		<result column="booksize" property="booksize" />
+		<result column="paper" property="paper" />
+		<result column="image_w" property="image_w" />
+		<result column="image_b" property="image_b" />
+
+		<association column="cid" property="category"
+			javaType="com.vivid.BookStore.category.domain.Category">
+			<id column="cid" property="cid" />
+			<result column="cname" property="cname" />
+			<result column="desc" property="desc" />
+			<result column="pid" property="pid" />
+		</association>
+	</resultMap>
+
+	<select id="findByBid" resultMap="book">
+		sELECT * FROM t_book b,
+		t_category c WHERE b.cid=c.cid AND
+		b.bid=#{bid}
+	</select>
+	<delete id="delete" parameterType="String">
+		delete from t_book where
+		bid=#{bid}
+	</delete>
+	<update id="edit" parameterType="com.vivid.BookStore.book.domain.Book">
+		update t_book set
+		bname=#{bname},author=#{author},price=#{price},currPrice=#{currPrice},discount=#{discount},press=#{press},publishtime=#{publishtime},edition=#{edition},pageNum=#{pageNum},wordNum=#{wordNum},printtime=#{printtime},booksize=#{booksize},paper=#{paper},cid=#{category.cid}
+		where bid=#{bid}
+	</update>
+	<select id="findBookCount" resultType="Integer"
+		parameterType="com.vivid.BookStore.book.domain.Book">
+		select count(*)
+		from t_book where 1=1
+		<if test="bid!=null">
+			and bid = #{bid}
+		</if>
+		<if test="category != null">
+			and cid = #{category.cid}
+		</if>
+		<if test="bname != null">
+			and bname like CONCAT('%',#{bname},'%')   </if>
+		<if test="press != null">
+			and press like CONCAT('%',#{press},'%')   </if>
+		<if test="author != null">
+			and author like CONCAT('%',#{author},'%')   </if>
+	</select>
+
+	<select id="findBook" resultMap="book"
+		parameterType="com.vivid.BookStore.book.domain.Book">
+		select * from t_book where 1=1
+		<if test="book.bid!=null">
+			and bid = #{book.bid}
+		</if>
+		<if test="book.category != null">
+			and cid = #{book.category.cid}
+		</if>
+		<if test="book.bname != null">
+			and bname like CONCAT('%',#{book.bname},'%') </if>
+		<if test="book.press != null">
+			and press like CONCAT('%',#{book.press},'%') </if>
+		<if test="book.author != null">
+			and author like CONCAT('%',#{book.author},'%') </if>
+		order by orderBy limit #{pos},#{ps}
+	</select>
+
+</mapper>

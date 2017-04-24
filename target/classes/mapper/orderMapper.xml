@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vivid.BookStore.order.dao.OrderDao">
+	<resultMap type="com.vivid.BookStore.order.domain.Order" id="order">
+		<id column="oid" property="oid" />
+		<result column="oid" property="oid" />
+		<result column="ordertime" property="ordertime" />
+		<result column="total" property="total" />
+		<result column="status" property="status" />
+		<result column="address" property="address" />
+		<association property="owner" column="uid"
+			javaType="com.vivid.BookStore.user.domain.User">
+			<id column="uid" property="uid" />
+		</association>
+	</resultMap>
+	<resultMap type="com.vivid.BookStore.order.domain.OrderItem"
+		id="orderItem">
+		<id column="orderItemId" property="orderItemId" />
+		<result column="quantity" property="quantity" />
+		<result column="subtotal" property="subtotal" />
+		<association property="book" column="bid"
+			javaType="com.vivid.BookStore.book.domain.Book">
+			<id column="bid" property="bid" />
+			<result column="currPrice" property="currPrice" />
+			<result column="image_b" property="image_b" />
+		</association>
+		<association property="order" column="oid"
+			javaType="com.vivid.BookStore.order.domain.Order">
+			<id column="oid" property="oid" />
+		</association>
+	</resultMap>
+	<select id="loadOrderItem" resultMap="orderItem">
+		select * from t_orderitem
+		where oid=#{oid}
+	</select>
+	<select id="findStatus" resultType="Integer">
+		select status from t_order
+		where oid=#{oid}
+	</select>
+	<update id="updateStatus">
+		update t_order set status=#{status} where oid=#{oid}
+	</update>
+	<select id="load" resultMap="order">
+		select * from t_order where
+		oid=#{oid}
+	</select>
+	<select id="findByCriteria" resultMap="order">
+		select * from t_order where 1=1
+		<if test="order.oid!=null">
+			and oid = #{order.oid}
+		</if>
+		<if test="order.status != null">
+			and status = #{order.status}
+		</if>
+		<if test="order.owner != null and order.owner.uid != null">
+			and uid =#{order.owner.uid}
+		</if>
+		order by ordertime desc limit #{pos},#{ps}
+	</select>
+	<select id="countByCriteria" parameterType="com.vivid.BookStore.order.domain.Order"
+		resultType="Integer">
+		select count(*) from t_order where 1=1
+		<if test="oid!=null">
+			and oid = #{oid}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		<if test="owner != null and owner.uid != null">
+			and uid =#{owner.uid}
+		</if>
+	</select>
+	<insert id="addOrderItem" parameterType="com.vivid.BookStore.order.domain.OrderItem">
+		insert into t_orderitem
+		values(#{orderItemId},#{quantity},#{subtotal},#{book.bid},#{book.bname},#{book.currPrice},#{book.image_b},#{order.oid})
+	</insert>
+	<insert id="addOrder" parameterType="com.vivid.BookStore.order.domain.Order">
+		insert into t_order
+		values(#{oid},#{ordertime},#{total},#{status},#{address},#{owner.uid})
+	</insert>
+</mapper>

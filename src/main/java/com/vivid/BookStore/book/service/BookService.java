@@ -73,7 +73,6 @@ public class BookService {
 	private Page<Book> findByCriteria(Book book, int pc) {
 		int count = bookDao.findBookCount(book);
 		List<Book> list = bookDao.findBook(book, (pc - 1) * ps, ps);
-		System.out.println(list.size());
 		Page<Book> pb = new Page<Book>();
 
 		pb.setBeanList(list);
