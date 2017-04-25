@@ -54,12 +54,13 @@
 					<div>
 						<form target="_top" action="<c:url value='/userLogin'/>"
 							method="post" id="loginForm">
-							<input type="hidden" name="method" value="login" />
+
 							<table>
 								<tr>
 									<td width="50"></td>
 									<td>
-										<label class="error" id="msg">${msg}</label>
+										<label class="error" id="msg"><c:forEach var="item"
+												items="${msg}"> ${item.value}</c:forEach> </label>
 									</td>
 								</tr>
 								<tr>

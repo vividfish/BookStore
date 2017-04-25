@@ -215,7 +215,7 @@ public class UserService {
 		} else if (loginname.length() < 3 || loginname.length() > 20) {
 			errors.put("loginname", "用户名长度必须在3~20之间！");
 		} else if (!ajaxValidateLoginname(loginname)) {
-			errors.put("loginname", "用户名已被注册！");
+			errors.put("loginname", "用户名不存在");
 		}
 		String loginpass = formUser.getLoginpass();
 		if (loginpass == null || loginpass.trim().isEmpty()) {

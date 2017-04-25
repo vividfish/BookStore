@@ -73,7 +73,7 @@ public class BookController {
 		/*
 		 * 2. 得到url：...
 		 */
-		String url = "findBookByCategory";
+		String url = "findBookByCategory?cid="+cid;
 		/*
 		 * 3. 获取查询条件，本方法就是cid，即分类的id
 		 */

@@ -34,18 +34,18 @@ import javax.servlet.http.HttpServletRequest;
 //</mvc:interceptor>
 //</mvc:interceptors>
 public class LoginFilter implements Filter {
-	private static final String paths[] = { "index", "login.jsp", "userLogin", "userRegist", "userRegist", "main,jsp",
-			"findBook", "loadBook", "ajaxValidate", "VerifyCodeServlet", "CategoryFindAll" ,""};
+	private static final String paths[] = { "index.jsp", "login.jsp", "userLogin", "userRegist", "userRegist", "main,jsp",
+			"findBook", "loadBook", "ajaxValidate", "VerifyCodeServlet", "CategoryFindAll", "contact.html" };
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		Object user = request.getSession().getAttribute("sessionUser");
-
+		System.out.println(request.getServletPath()+"----------login");
 		for (String path : paths) {
 			if (request.getServletPath().contains(path)) {
-
+				//System.out.println(request.getServletPath()+"------confirm ");
 				chain.doFilter(request, resp);
 				return;
 			}

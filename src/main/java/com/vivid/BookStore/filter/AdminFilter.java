@@ -18,9 +18,10 @@ public class AdminFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-		Admin admin = (Admin) ((HttpServletRequest) req).getSession().getAttribute("admin");
+		
 		HttpServletRequest request = (HttpServletRequest) req;
-		System.out.println(request.getServletPath()+"admin");
+		Admin admin = (Admin) request.getSession().getAttribute("admin");
+		//System.out.println(request.getServletPath()+"------------admin");
 		for (String path : paths) {
 			if (request.getContextPath().contains(path)) {
 				if (admin == null) {
@@ -31,7 +32,7 @@ public class AdminFilter implements Filter {
 				}
 			}
 		}
-		chain.doFilter(req, resp);
+		chain.doFilter(request, resp);
 	}
 
 	@Override

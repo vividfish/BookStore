@@ -55,7 +55,6 @@ $(function() {
 		if (!validateVerifyCode()) {
 			bool = false;
 		}
-		alert(bool);
 		return bool;
 	});
 });

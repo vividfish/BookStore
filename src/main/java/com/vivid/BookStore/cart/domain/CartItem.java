@@ -60,7 +60,4 @@ public class CartItem {
 		this.user = user;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(2.0 - 1.1);// 0.8999999999999999
-	}
 }
