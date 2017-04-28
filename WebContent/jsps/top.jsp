@@ -48,7 +48,7 @@ a:hover {
 		  <a href="<c:url value='/jsps/user/regist.jsp'/>" target="_parent">注册会员</a>
 			</c:when>
 			<c:otherwise>
-		      传智会员：${sessionScope.sessionUser.loginname }&nbsp;&nbsp;|&nbsp;&nbsp;
+		      会员：${sessionScope.sessionUser.loginname }&nbsp;&nbsp;|&nbsp;&nbsp;
 		  <a href="<c:url value='/myCart'/>"
 					target="body">我的购物车</a>&nbsp;&nbsp;|&nbsp;&nbsp;
 		  <a href="<c:url value='/myOrders'/>"

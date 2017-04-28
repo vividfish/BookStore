@@ -218,8 +218,6 @@
 					<td>操作</td>
 				</tr>
 
-
-
 				<c:forEach items="${cartItemList }" var="cartItem">
 					<tr align="center">
 						<td align="left">
@@ -227,13 +225,14 @@
 								name="checkboxBtn" checked="checked" />
 						</td>
 						<td align="left" width="70px">
-							<a class="linkImage" href="<c:url value='/jsps/book/desc.jsp'/>">
+							<a class="linkImage"
+								href="<c:url value='/loadBook?bid=${cartItem.book.bid}'/>">
 								<img border="0" width="54" align="top"
 									src="<c:url value='/${cartItem.book.image_b }'/>" />
 							</a>
 						</td>
 						<td align="left" width="400px">
-							<a href="<c:url value='/jsps/book/desc.jsp'/>">
+							<a href="<c:url value='/loadBook?bid=${cartItem.book.bid}'/>">
 								<span>${cartItem.book.bname }</span>
 							</a>
 						</td>
